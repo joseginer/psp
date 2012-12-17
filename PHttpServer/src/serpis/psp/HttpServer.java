@@ -3,21 +3,24 @@ package serpis.psp;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-import org.omg.CORBA_2_3.portable.OutputStream;
-
 public class HttpServer {
 
+	/**
+	 * @param args
+	 * @throws IOException 
+	 */
 	public static void main(String[] args) throws IOException {
-		String newLine = "\r\n";
-		int port = 8080;
+		final String newLine = "\r\n";
+		final int port = 8080;
 		final String fileNameError404 = "fileError404.html";
 		final String response200 = "HTTP/1.0 200 OK";
-		final String response404 = "HTTP/1.0 404 Not found";		
+		final String response404 = "HTTP/1.0 404 Not Found"; 
 		ServerSocket serverSocket = new ServerSocket(port);
 		
 		Socket socket = serverSocket.accept();
@@ -37,30 +40,24 @@ public class HttpServer {
 		
 		String responseFileName = file.exists() ? fileName : fileNameError404;
 		String response = file.exists() ? response200 : response404;
-		
+
 		String header = response + newLine + newLine;
 		byte[] headerBuffer = header.getBytes();
 		
 		OutputStream outputStream = socket.getOutputStream();
 		outputStream.write(headerBuffer);
 		
-		FileInputStream fileInputStream = new FileInputStream(responseFileName);
-		
 		final int bufferSize = 2048;
 		byte[] buffer = new byte[bufferSize];
+
+		FileInputStream fileInputStream = new FileInputStream(responseFileName);
+		
 		int count;
-		while((count = fileInputStream.read(buffer))!= -1)
+		
+		while ( (count = fileInputStream.read(buffer)) != -1 )
 			outputStream.write(buffer, 0, count);
 		
-
-		
-
-		PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
-		
-		printWriter.print("HTTP/1.0 404 Not Found" + newLine);
-		printWriter.print(newLine);
-		
-		printWriter.flush();
+		fileInputStream.close();
 		
 		socket.close();
 		
