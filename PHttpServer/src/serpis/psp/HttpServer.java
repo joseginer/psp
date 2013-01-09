@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -19,7 +18,7 @@ public class HttpServer {
 			final String response200 = "HTTP/1.0 200 OK";
 			final String response404 = "HTTP/1.0 404 Not Found";
 			ServerSocket serverSocket = new ServerSocket(port);
-			
+			while(true){
 				Socket socket = serverSocket.accept();
 				Scanner scanner = new Scanner(socket.getInputStream());
 				
@@ -51,7 +50,8 @@ public class HttpServer {
 				int count;
 				
 				while ((count = fileInputStream.read(buffer))!=-1){
-				
+					
+					Thread.sleep(5000);
 					outputStream.write(buffer, 0, count);
 				}
 				//System.setProperty("line.separator", "\r\n");
@@ -65,8 +65,8 @@ public class HttpServer {
 				
 				fileInputStream.close();
 				socket.close();
-			
-			serverSocket.close();
+			}
+			//serverSocket.close();
 		}
 
 }
